@@ -735,12 +735,136 @@
         font-weight: 600;
       }
 
-      /* ⭐ NEW: Scanner video */
+      /* ⭐ Scanner styles */
+      .scanner-container {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
       #qrVideo {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 12px;
+        display: block;
+      }
+
+      /* Corner brackets */
+      .scanner-corner {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border: 3px solid #667eea;
+        z-index: 2;
+      }
+      .scanner-corner-tl {
+        top: 20px;
+        left: 20px;
+        border-right: none;
+        border-bottom: none;
+        border-top-left-radius: 12px;
+      }
+      .scanner-corner-tr {
+        top: 20px;
+        right: 20px;
+        border-left: none;
+        border-bottom: none;
+        border-top-right-radius: 12px;
+      }
+      .scanner-corner-bl {
+        bottom: 20px;
+        left: 20px;
+        border-right: none;
+        border-top: none;
+        border-bottom-left-radius: 12px;
+      }
+      .scanner-corner-br {
+        bottom: 20px;
+        right: 20px;
+        border-left: none;
+        border-top: none;
+        border-bottom-right-radius: 12px;
+      }
+
+      /* Animated scanning line */
+      .scanner-line {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          #667eea 20%,
+          #667eea 80%,
+          transparent 100%
+        );
+        box-shadow: 0 0 12px 3px rgba(102, 126, 234, 0.8);
+        z-index: 3;
+        animation: scanLine 2.5s ease-in-out infinite;
+      }
+      .scanner-line.paused {
+        animation-play-state: paused;
+        opacity: 0.3;
+      }
+
+      @keyframes scanLine {
+        0% {
+          top: 20px;
+        }
+        50% {
+          top: calc(100% - 23px);
+        }
+        100% {
+          top: 20px;
+        }
+      }
+
+      /* Timer badge */
+      .scanner-timer {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.75);
+        color: #fff;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        z-index: 4;
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Success flash animation */
+      @keyframes flashSuccess {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+        50% {
+          box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+        }
+      }
+      .scanner-container.success {
+        animation: flashSuccess 1s ease;
+      }
+
+      /* Placeholder state */
+      .scanner-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: #1f2937;
       }
     </style>
   </head>
@@ -2063,6 +2187,9 @@
         if (_gateCountdownInterval) {
           clearInterval(_gateCountdownInterval);
           _gateCountdownInterval = null;
+        }
+        if (State.cameraStream) {
+          stopCamera();
         }
         State.currentPage = page;
         State.pageData = data || {};
@@ -3834,13 +3961,39 @@
 
         <div class="card p-4 mb-4">
             <h3 class="font-bold mb-3"><i class="fas fa-camera mr-2"></i>${t("scanQRCode")}</h3>
-            <div id="qrReader" class="w-full bg-black rounded-xl overflow-hidden mb-3" style="height: 280px; position:relative;">
+
+            <!-- Scanner Container -->
+            <div id="scannerContainer" class="scanner-container mb-3">
                 <video id="qrVideo" autoplay playsinline muted style="display:none;"></video>
-                <div id="qrPlaceholder" class="absolute inset-0 flex items-center justify-center text-white">
-                    <div class="text-center"><i class="fas fa-camera text-5xl mb-2 opacity-50"></i><p class="text-sm opacity-70">Camera preview</p></div>
+
+                <!-- Placeholder (shown when camera off) -->
+                <div id="qrPlaceholder" class="scanner-placeholder">
+                    <div class="text-center">
+                        <i class="fas fa-camera text-5xl mb-2 opacity-50"></i>
+                        <p class="text-sm opacity-70">${State.language === "bn" ? "ক্যামেরা বন্ধ" : "Camera is off"}</p>
+                    </div>
+                </div>
+
+                <!-- Corners -->
+                <div class="scanner-corner scanner-corner-tl"></div>
+                <div class="scanner-corner scanner-corner-tr"></div>
+                <div class="scanner-corner scanner-corner-bl"></div>
+                <div class="scanner-corner scanner-corner-br"></div>
+
+                <!-- Animated scan line -->
+                <div id="scannerLine" class="scanner-line" style="display:none;"></div>
+
+                <!-- Timer badge -->
+                <div id="scannerTimer" class="scanner-timer" style="display:none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span id="scannerTimerText">5s</span>
                 </div>
             </div>
-            <button id="cameraBtn" onclick="toggleCamera()" class="w-full py-3 btn-primary rounded-xl mb-3"><i class="fas fa-camera mr-2"></i>${t("startCamera")}</button>
+
+            <button id="cameraBtn" onclick="toggleCamera()" class="w-full py-3 btn-primary rounded-xl mb-3">
+                <i class="fas fa-camera mr-2"></i>${t("startCamera")}
+            </button>
+
             <p class="text-center text-sm text-gray-500 my-2">— ${State.language === "bn" ? "অথবা" : "OR"} —</p>
             <div class="flex gap-2">
                 <input type="text" id="manualRegId" class="form-input flex-1" placeholder="REG20200001" onkeypress="if(event.key==='Enter') manualScan()">
@@ -4037,7 +4190,9 @@
         _gateCountdownInterval = setInterval(update, 1000);
       }
 
-      // ==================== QR SCANNER (Camera) ====================
+      // ==================== QR SCANNER (Camera with 5s Cycle) ====================
+      const SCAN_CYCLE_SECONDS = 5;
+
       async function toggleCamera() {
         if (State.cameraStream) {
           stopCamera();
@@ -4045,11 +4200,17 @@
         }
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" },
+            video: {
+              facingMode: "environment",
+              width: { ideal: 640 },
+              height: { ideal: 480 },
+            },
           });
           State.cameraStream = stream;
           const video = document.getElementById("qrVideo");
           const placeholder = document.getElementById("qrPlaceholder");
+          const line = document.getElementById("scannerLine");
+          const timer = document.getElementById("scannerTimer");
           const btn = document.getElementById("cameraBtn");
           if (video) {
             video.srcObject = stream;
@@ -4057,9 +4218,11 @@
             video.play();
           }
           if (placeholder) placeholder.style.display = "none";
+          if (line) line.style.display = "block";
+          if (timer) timer.style.display = "flex";
           if (btn)
             btn.innerHTML = `<i class="fas fa-stop mr-2"></i>${t("stopCamera")}`;
-          startQrScanLoop();
+          startScanCycle();
         } catch (e) {
           console.error("Camera error:", e);
           showToast("Camera not available: " + e.message, "error");
@@ -4067,40 +4230,108 @@
       }
 
       function stopCamera() {
+        // Clear cycle timer
+        if (State.scanCycleTimer) {
+          clearInterval(State.scanCycleTimer);
+          State.scanCycleTimer = null;
+        }
+        if (State.scanFrameTimer) {
+          clearInterval(State.scanFrameTimer);
+          State.scanFrameTimer = null;
+        }
+
+        // Stop camera stream
         if (State.cameraStream) {
           State.cameraStream.getTracks().forEach((tr) => tr.stop());
           State.cameraStream = null;
         }
-        if (State.scanInterval) {
-          clearInterval(State.scanInterval);
-          State.scanInterval = null;
-        }
+
         const video = document.getElementById("qrVideo");
         const placeholder = document.getElementById("qrPlaceholder");
+        const line = document.getElementById("scannerLine");
+        const timer = document.getElementById("scannerTimer");
         const btn = document.getElementById("cameraBtn");
         if (video) {
           video.srcObject = null;
           video.style.display = "none";
         }
         if (placeholder) placeholder.style.display = "flex";
+        if (line) line.style.display = "none";
+        if (timer) timer.style.display = "none";
         if (btn)
           btn.innerHTML = `<i class="fas fa-camera mr-2"></i>${t("startCamera")}`;
       }
 
-      function startQrScanLoop() {
-        if (State.scanInterval) clearInterval(State.scanInterval);
-        if (typeof jsQR === "undefined" && typeof window.jsQR === "undefined") {
+      /**
+       * Start a 5-second scan cycle:
+       * - Animated line sweeps
+       * - Timer counts down 5→0
+       * - If QR detected → stop, show modal
+       * - If not → restart cycle
+       */
+      function startScanCycle() {
+        // Clear any old timers
+        if (State.scanCycleTimer) {
+          clearInterval(State.scanCycleTimer);
+          State.scanCycleTimer = null;
+        }
+        if (State.scanFrameTimer) {
+          clearInterval(State.scanFrameTimer);
+          State.scanFrameTimer = null;
+        }
+
+        // Ensure jsQR loaded
+        if (typeof jsQR === "undefined") {
           console.warn("jsQR not loaded — camera scanning disabled");
           return;
         }
+
+        // Restart line animation
+        const line = document.getElementById("scannerLine");
+        if (line) {
+          line.classList.remove("paused");
+          line.style.display = "block";
+          // Restart animation by re-triggering
+          line.style.animation = "none";
+          void line.offsetWidth;
+          line.style.animation = "scanLine 2.5s ease-in-out infinite";
+        }
+
+        let secondsLeft = SCAN_CYCLE_SECONDS;
+        updateTimerDisplay(secondsLeft);
+
+        // Countdown timer — 1s interval
+        State.scanCycleTimer = setInterval(function () {
+          secondsLeft--;
+          updateTimerDisplay(secondsLeft);
+
+          if (secondsLeft <= 0) {
+            // Cycle complete — restart
+            clearInterval(State.scanCycleTimer);
+            State.scanCycleTimer = null;
+            if (State.scanFrameTimer) {
+              clearInterval(State.scanFrameTimer);
+              State.scanFrameTimer = null;
+            }
+            // Restart if camera still on
+            if (State.cameraStream) {
+              startScanCycle();
+            }
+          }
+        }, 1000);
+
+        // Frame scan — check for QR every 250ms
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        State.scanInterval = setInterval(() => {
+        State.scanFrameTimer = setInterval(function () {
           const video = document.getElementById("qrVideo");
           if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) return;
+          if (!State.cameraStream) return; // camera stopped
+
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           ctx.drawImage(video, 0, 0);
+
           try {
             const imageData = ctx.getImageData(
               0,
@@ -4115,14 +4346,93 @@
               { inversionAttempts: "dontInvert" },
             );
             if (code && code.data) {
-              const text = code.data;
-              let regId = text;
-              const m = text.match(/verify=([A-Z0-9]+)/i);
-              if (m) regId = m[1];
-              processScan(regId);
+              // QR detected! Stop everything
+              handleQrDetected(code.data);
             }
           } catch (e) {}
-        }, 400);
+        }, 250);
+      }
+
+      /** Called when a QR code is detected in the scan cycle. */
+      function handleQrDetected(qrData) {
+        // Stop cycle
+        if (State.scanCycleTimer) {
+          clearInterval(State.scanCycleTimer);
+          State.scanCycleTimer = null;
+        }
+        if (State.scanFrameTimer) {
+          clearInterval(State.scanFrameTimer);
+          State.scanFrameTimer = null;
+        }
+
+        // Pause line and hide timer
+        const line = document.getElementById("scannerLine");
+        if (line) line.classList.add("paused");
+        const timer = document.getElementById("scannerTimer");
+        if (timer) timer.style.display = "none";
+
+        // Success flash
+        const container = document.getElementById("scannerContainer");
+        if (container) {
+          container.classList.add("success");
+          setTimeout(function () {
+            container.classList.remove("success");
+          }, 1000);
+        }
+
+        // Play a beep (optional)
+        try {
+          const audioCtx = new (
+            window.AudioContext || window.webkitAudioContext
+          )();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.frequency.value = 1200;
+          gain.gain.value = 0.15;
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+        } catch (e) {}
+
+        // Extract Registration ID
+        let regId = qrData;
+        const m = qrData.match(/verify=([A-Z0-9]+)/i);
+        if (m) regId = m[1];
+
+        // Process scan (async)
+        processScan(regId);
+      }
+
+      function updateTimerDisplay(seconds) {
+        const el = document.getElementById("scannerTimerText");
+        if (el) el.textContent = seconds + "s";
+      }
+
+      /** Stop the cycle and let the caller decide what to do next. */
+      function pauseScanCycle() {
+        if (State.scanCycleTimer) {
+          clearInterval(State.scanCycleTimer);
+          State.scanCycleTimer = null;
+        }
+        if (State.scanFrameTimer) {
+          clearInterval(State.scanFrameTimer);
+          State.scanFrameTimer = null;
+        }
+        const line = document.getElementById("scannerLine");
+        if (line) line.classList.add("paused");
+        const timer = document.getElementById("scannerTimer");
+        if (timer) timer.style.display = "none";
+      }
+
+      /** Resume scanning (called after modal is closed). */
+      function resumeScanCycle() {
+        if (!State.cameraStream) return; // camera off
+        const line = document.getElementById("scannerLine");
+        if (line) line.classList.remove("paused");
+        const timer = document.getElementById("scannerTimer");
+        if (timer) timer.style.display = "flex";
+        startScanCycle();
       }
 
       function manualScan() {
@@ -4241,6 +4551,12 @@
         if (modal) modal.innerHTML = "";
         State.scannedStudent = null;
         State.scanResultType = null;
+
+        if (State.cameraStream) {
+          setTimeout(function () {
+            resumeScanCycle();
+          }, 400);
+        }
       }
 
       async function doCheckIn(regId) {
@@ -4254,11 +4570,60 @@
         if (result && result.success) {
           showToast(t("checkInSuccess"), "success");
           closeScanModal();
-          await loadGateDashboard();
-          renderApp();
+          // ⭐ Just refresh stats + recent list, NOT re-render entire page
+          await refreshGateStats();
         } else {
           showToast((result && result.message) || t("checkInFailed"), "error");
           closeScanModal();
+        }
+      }
+
+      /** Refresh only stats + recent scans without full re-render (keeps camera on). */
+      async function refreshGateStats() {
+        const r = await apiCall("getGateDashboard", {}, { skipLoading: true });
+        if (!r) return;
+        State.gateData = r;
+        // Update stat boxes
+        const stats = r.todayStats || { checkIns: 0, duplicate: 0, invalid: 0 };
+        const statEls = document.querySelectorAll(
+          ".grid.grid-cols-3.gap-3.mb-4 .card p:nth-child(2)",
+        );
+        if (statEls && statEls.length >= 3) {
+          statEls[0].textContent = formatNumber(stats.checkIns);
+          statEls[1].textContent = formatNumber(stats.duplicate);
+          statEls[2].textContent = formatNumber(stats.invalid);
+        }
+        // Update recent scans list
+        const recentContainer = document.querySelector(
+          ".card:last-child .space-y-2",
+        );
+        if (recentContainer && r.recentScans) {
+          recentContainer.innerHTML = r.recentScans
+            .map((s) => {
+              const cls =
+                s.result === "SUCCESS" || s.result === "VALID"
+                  ? "badge-approved"
+                  : s.result === "DUP"
+                    ? "badge-pending"
+                    : "badge-rejected";
+              const icon =
+                s.result === "SUCCESS" || s.result === "VALID"
+                  ? "fa-check-circle text-green-500"
+                  : s.result === "DUP"
+                    ? "fa-exclamation-triangle text-yellow-500"
+                    : "fa-times-circle text-red-500";
+              return `<div class="flex items-center justify-between p-2 border-b border-gray-100">
+              <div class="flex items-center gap-2">
+                  <i class="fas ${icon}"></i>
+                  <span class="font-medium text-sm">${s.regId}</span>
+              </div>
+              <div class="text-right">
+                  <span class="px-2 py-1 rounded-full text-xs font-medium ${cls}">${s.result}</span>
+                  <p class="text-xs text-gray-400 mt-1">${extractTime(s.timestamp)}</p>
+              </div>
+            </div>`;
+            })
+            .join("");
         }
       }
 
