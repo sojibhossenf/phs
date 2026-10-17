@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Porabari High School Reunion Ceremony Registration</title>
 
+    <!-- ============ FONTS & LIBS ============ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -20,11 +21,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
+    <!-- QR generator with fallback -->
     <script
       src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"
       onerror="loadQRFallback()"
     ></script>
     <script>
+      // Fallback CDN loader for QR library
       function loadQRFallback() {
         console.warn("Primary QR CDN failed — loading fallback");
         var script = document.createElement("script");
@@ -34,7 +37,7 @@
     </script>
 
     <style>
-      /* ==== EXISTING STYLES (unchanged) ==== */
+      /* ============ ID CARD GRID ============ */
       .id-cards-container {
         display: grid;
         grid-template-columns: repeat(4, 52mm);
@@ -61,29 +64,54 @@
           flex-direction: column;
         }
       }
+
+      /* ============ ID CARD SHARED ============ */
       .id-card-front,
       .id-card-back {
         width: 52mm;
         height: 83.9mm;
-        border-radius: 3mm;
+        border-radius: 4mm;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 0, 0, 0.3),
+          0 8px 10px -6px rgba(0, 0, 0, 0.1);
         background: #ffffff;
-        font-family: "Exo 2", Arial, sans-serif;
+        font-family: "Exo 2", Arial, Helvetica, sans-serif;
         position: relative;
         display: flex;
         flex-direction: column;
         color: #1f2937;
         flex-shrink: 0;
+        border: 0.3mm solid #e5e7eb;
       }
+
+      /* Decorative dot pattern on front */
+      .id-card-front::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(#667eea 0.5px, transparent 0.5px);
+        background-size: 4px 4px;
+        opacity: 0.05;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ---------- FRONT HEADER ---------- */
       .id-front-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #fff;
-        padding: 2.5mm;
+        background: linear-gradient(120deg, #4f46e5 0%, #7e22ce 100%);
+        color: #ffffff;
+        padding: 2.5mm 2.5mm;
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 2.5mm;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .id-front-header-left {
         display: flex;
@@ -131,6 +159,8 @@
         text-transform: uppercase;
         margin-top: 0.6mm;
       }
+
+      /* ---------- FRONT PHOTO ---------- */
       .id-front-photo-wrap {
         display: flex;
         justify-content: center;
@@ -145,6 +175,7 @@
         flex-shrink: 0;
         background: #f3f4f6;
       }
+
       .id-front-body {
         padding: 1.5mm 2.5mm;
         flex: 1;
@@ -152,6 +183,33 @@
         flex-direction: column;
         gap: 1.2mm;
       }
+
+      /* ---------- FRONT QR ---------- */
+      .id-front-qr-wrap {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1mm 0;
+        z-index: 1;
+      }
+      .id-front-qr {
+        width: 34mm;
+        height: 34mm;
+        background: #ffffff;
+        border: 0.6mm solid #667eea;
+        border-radius: 2mm;
+        padding: 1mm;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .id-front-qr img,
+      .id-front-qr canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+      }
+
+      /* ---------- FRONT INFO BOX ---------- */
       .id-front-reg-box {
         border: 0.4mm solid #667eea;
         border-radius: 1.5mm;
@@ -178,6 +236,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       .id-front-grid {
         display: flex;
         flex-direction: column;
@@ -223,58 +282,163 @@
         background: #f9fafb;
         margin-top: auto;
       }
+
+      /* ---------- BACK SIDE ---------- */
       .id-card-back {
-        background: #fff;
-        padding: 2mm 2.5mm;
+        background: #ffffff;
+        padding: 0;
         display: flex;
         flex-direction: column;
+        position: relative;
+      }
+      .id-card-back::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(#667eea 0.5px, transparent 0.5px);
+        background-size: 4px 4px;
+        opacity: 0.05;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .id-back-header {
+        background: linear-gradient(120deg, #4f46e5 0%, #7e22ce 100%);
+        color: #ffffff;
+        padding: 2.5mm 2.5mm;
+        text-align: center;
+        font-size: 7pt;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .id-back-content {
+        padding: 2mm;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
       }
       .id-back-section {
         margin-bottom: 1.5mm;
       }
       .id-back-title {
-        font-size: 6pt;
+        font-size: 5pt;
         font-weight: 700;
-        color: #667eea;
+        color: #4f46e5;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding-bottom: 0.6mm;
+        letter-spacing: 0.3px;
         margin-bottom: 1mm;
-        border-bottom: 0.4mm solid #667eea;
-      }
-      .id-back-line {
-        font-size: 5.6pt;
-        color: #374151;
-        line-height: 1.45;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
         gap: 1mm;
       }
+      .id-back-title i {
+        font-size: 5.5pt;
+      }
+      .id-back-grid {
+        border: 0.3mm solid #e5e7eb;
+        border-radius: 1.5mm;
+        overflow: hidden;
+        background: #ffffff;
+      }
+      .id-back-line {
+        font-size: 5pt;
+        color: #374151;
+        display: flex;
+        justify-content: space-between;
+        padding: 0.7mm 1.2mm;
+        border-bottom: 0.3mm solid #e5e7eb;
+      }
+      .id-back-line:nth-child(even) {
+        background-color: #f8fafc;
+      }
+      .id-back-line:last-child {
+        border-bottom: none;
+      }
       .id-back-line b {
-        color: #111827;
+        color: #64748b;
         font-weight: 600;
         flex-shrink: 0;
+        text-transform: uppercase;
+        font-size: 4.5pt;
+        letter-spacing: 0.2px;
+        margin-top: 0.1mm;
       }
       .id-back-line span {
         text-align: right;
+        font-weight: 700;
+        color: #1e293b;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: 65%;
+      }
+      .id-back-terms-box {
+        background: #f5f3ff;
+        border: 0.3mm solid #ddd6fe;
+        border-radius: 1.5mm;
+        padding: 1mm 1.5mm;
+        margin-top: auto;
+      }
+      .id-back-terms-box .id-back-title {
+        margin-bottom: 0.5mm;
+        color: #5b21b6;
       }
       .id-back-list {
-        list-style: disc;
-        padding-left: 3mm;
-        font-size: 5.2pt;
+        list-style: none;
+        padding-left: 0;
+        font-size: 4.5pt;
         color: #4b5563;
-        line-height: 1.4;
+        line-height: 1.3;
+        margin: 0;
       }
       .id-back-list li {
-        margin-bottom: 0.2mm;
+        position: relative;
+        padding-left: 2mm;
+      }
+      .id-back-list li::before {
+        content: "•";
+        color: #7e22ce;
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+      }
+      .id-back-contact-box {
+        background: #f5f3ff;
+        border: 0.4mm solid #ddd6fe;
+        border-radius: 1.5mm;
+        padding: 1.5mm;
+        margin-top: auto;
       }
       .id-back-contact-line {
         font-size: 5.4pt;
-        color: #4b5563;
-        line-height: 1.5;
+        color: #4c1d95;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 1.5mm;
+      }
+      .id-back-contact-line i {
+        color: #7e22ce;
+      }
+      .id-back-copyright {
+        text-align: center;
+        font-size: 4.5pt;
+        color: #9ca3af;
+        padding: 1mm;
+        background: #f9fafb;
+        border-top: 0.3mm solid #e5e7eb;
+        position: relative;
+        z-index: 1;
+        margin-top: auto;
       }
       .id-back-qr-wrap {
         display: flex;
@@ -297,14 +461,8 @@
         height: 100% !important;
         display: block;
       }
-      .id-back-copyright {
-        text-align: center;
-        font-size: 5pt;
-        color: #9ca3af;
-        border-top: 0.3mm solid #e5e7eb;
-        padding-top: 1mm;
-        margin-top: 1mm;
-      }
+
+      /* ============ PRINT MODE ============ */
       @media print {
         @page {
           size: legal portrait;
@@ -348,21 +506,23 @@
         .no-print {
           display: none !important;
         }
-        .id-back-qr,
-        .id-back-qr canvas,
-        .id-back-qr img {
+        .id-front-qr,
+        .id-front-qr canvas,
+        .id-front-qr img {
           display: block !important;
           visibility: visible !important;
           opacity: 1 !important;
         }
-        .id-back-qr canvas {
+        .id-front-qr canvas {
           width: 100% !important;
           height: 100% !important;
           image-rendering: pixelated;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
       }
 
-      /* Column centering */
+      /* ============ TABLE COLUMN ALIGNMENT ============ */
       #batchWiseStatsTable thead th:first-child,
       #batchWiseStatsTable tbody td:first-child {
         text-align: center !important;
@@ -407,6 +567,7 @@
         justify-content: center !important;
       }
 
+      /* ============ GENERIC DATA TABLE ============ */
       table.data-table {
         border-collapse: collapse;
         border: 2px solid #6b7280;
@@ -434,6 +595,7 @@
         border-bottom: 2px solid #6b7280;
       }
 
+      /* ============ GLOBAL ============ */
       * {
         font-family: "Exo 2", "Hind Siliguri", sans-serif;
       }
@@ -468,6 +630,8 @@
       .btn-secondary:hover {
         background: #e5e7eb;
       }
+
+      /* ============ WIZARD STEPS ============ */
       .step-indicator {
         display: flex;
         justify-content: space-between;
@@ -523,6 +687,8 @@
         color: #667eea;
         font-weight: 600;
       }
+
+      /* ============ FORM INPUTS ============ */
       .form-input {
         width: 100%;
         padding: 12px 16px;
@@ -555,6 +721,8 @@
         font-weight: 500;
         color: #374151;
       }
+
+      /* ============ PAYMENT OPTIONS ============ */
       .payment-option {
         border: 2px solid #e5e7eb;
         border-radius: 12px;
@@ -588,6 +756,8 @@
         height: 36px;
         width: auto;
       }
+
+      /* ============ PROFESSION CHIPS ============ */
       .profession-radio {
         display: flex;
         align-items: center;
@@ -606,6 +776,8 @@
         border-color: #667eea;
         background: #eef2ff;
       }
+
+      /* ============ TOAST ============ */
       .toast {
         position: fixed;
         top: 20px;
@@ -629,6 +801,8 @@
           transform: translateX(-50%) translateY(0);
         }
       }
+
+      /* ============ SPINNER ============ */
       .spinner {
         border: 3px solid rgba(255, 255, 255, 0.3);
         border-top: 3px solid white;
@@ -643,6 +817,8 @@
           transform: rotate(360deg);
         }
       }
+
+      /* ============ UTILITY ============ */
       .hidden {
         display: none !important;
       }
@@ -659,6 +835,8 @@
           transform: translateY(0);
         }
       }
+
+      /* ============ RECEIPT PRINT ============ */
       @media print {
         body * {
           visibility: hidden;
@@ -677,6 +855,8 @@
           display: none !important;
         }
       }
+
+      /* ============ MOBILE TWEAKS ============ */
       @media (max-width: 640px) {
         .step-label {
           font-size: 10px;
@@ -690,10 +870,13 @@
           border-radius: 12px;
         }
       }
+
       .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
       }
+
+      /* ============ STATUS BADGES ============ */
       .badge-pending {
         background: #fef3c7;
         color: #92400e;
@@ -706,6 +889,8 @@
         background: #fee2e2;
         color: #991b1b;
       }
+
+      /* ============ DASHBOARD TABS ============ */
       .tab-btn {
         padding: 10px 20px;
         border-bottom: 3px solid transparent;
@@ -720,6 +905,8 @@
       .tab-btn:hover {
         color: #667eea;
       }
+
+      /* ============ REGISTRATION BANNERS ============ */
       .banner-closed {
         background: #dc2626;
         color: white;
@@ -735,7 +922,7 @@
         font-weight: 600;
       }
 
-      /* ⭐ Scanner styles */
+      /* ============ QR SCANNER ============ */
       .scanner-container {
         position: relative;
         width: 100%;
@@ -744,15 +931,12 @@
         border-radius: 16px;
         overflow: hidden;
       }
-
       #qrVideo {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
       }
-
-      /* Corner brackets */
       .scanner-corner {
         position: absolute;
         width: 40px;
@@ -788,8 +972,6 @@
         border-top: none;
         border-bottom-right-radius: 12px;
       }
-
-      /* Animated scanning line */
       .scanner-line {
         position: absolute;
         left: 20px;
@@ -810,7 +992,6 @@
         animation-play-state: paused;
         opacity: 0.3;
       }
-
       @keyframes scanLine {
         0% {
           top: 20px;
@@ -822,8 +1003,6 @@
           top: 20px;
         }
       }
-
-      /* Timer badge */
       .scanner-timer {
         position: absolute;
         top: 12px;
@@ -841,8 +1020,6 @@
         align-items: center;
         gap: 6px;
       }
-
-      /* Success flash animation */
       @keyframes flashSuccess {
         0%,
         100% {
@@ -855,8 +1032,6 @@
       .scanner-container.success {
         animation: flashSuccess 1s ease;
       }
-
-      /* Placeholder state */
       .scanner-placeholder {
         position: absolute;
         inset: 0;
@@ -869,11 +1044,14 @@
     </style>
   </head>
   <body>
+    <!-- App mount point -->
     <div id="app"></div>
     <div id="toastContainer"></div>
 
     <script>
-      // ==================== VERIFY ID ====================
+      /* ============================================================
+       * VERIFY ID (from URL: ?verify=REG...)
+       * ============================================================ */
       const VERIFY_ID = (function () {
         try {
           const params = new URLSearchParams(window.location.search);
@@ -884,11 +1062,15 @@
         }
       })();
 
-      // ==================== API URL ====================
+      /* ============================================================
+       * API ENDPOINT
+       * ============================================================ */
       const API_URL =
         "https://script.google.com/macros/s/AKfycbyh1HV4YMv186PUAoZIB6xYEwOoXZA8dUSliyZEIj00EMoXqla2sdHWGjx067YbrQbq/exec";
 
-      // ==================== CONFIG ====================
+      /* ============================================================
+       * CONFIG
+       * ============================================================ */
       const CONFIG = {
         API_URL: API_URL,
         APP_NAME: "Porabari High School Reunion Ceremony",
@@ -935,11 +1117,13 @@
         ],
       };
 
-      // ==================== STATE ====================
+      /* ============================================================
+       * GLOBAL STATE
+       * ============================================================ */
       const State = {
         currentPage: "home",
         currentStep: 1,
-        language: localStorage.getItem("phs_lang") || "bn",
+        language: localStorage.getItem("phs_lang") || "en",
         session: localStorage.getItem("phs_session") || null,
         studentData: null,
         studentsPage: 1,
@@ -965,7 +1149,7 @@
         studentsSearchActive: false,
         studentsBatchFilter: "all",
         studentsAddSectionOpen: false,
-        // ⭐ Gate Admin & Reports
+        // Gate admin & reports
         gateData: null,
         gateReport: null,
         superReport: null,
@@ -977,7 +1161,9 @@
         scanInterval: null,
       };
 
-      // ==================== TRANSLATIONS ====================
+      /* ============================================================
+       * TRANSLATIONS (EN + BN)
+       * ============================================================ */
       const translations = {
         en: {
           appName: "Porabari High School Reunion Ceremony",
@@ -1175,6 +1361,7 @@
           registrationStatusLabel: "Registration Status",
           eventDateLabel: "Event Date",
           venueLabel: "Venue",
+          timeLabel: "Time",
           registrationDeadlineLabel: "Registration Deadline",
           eventStartTimeLabel: "Event Start Time",
           eventEndTimeLabel: "Event End Time",
@@ -1224,7 +1411,11 @@
           adminButton: "Create Admin",
           showing: "Showing",
           of: "of",
-          // ⭐ Gate & Report
+          countDownLabel: "Countdown",
+          daysLabel: "Days",
+          hoursLabel: "Hours",
+          minutesLabel: "Minutes",
+          secondsLabel: "Seconds",
           scannerTab: "Scanner",
           myReportTab: "My Report",
           eventNotStarted: "Event hasn't started yet",
@@ -1265,7 +1456,6 @@
           downloadMyReport: "Download My Report",
           noScans: "No scans yet",
           noScansHint: "Start scanning to see activity here",
-          // Report tab (Super Admin)
           overallStats: "Overall Statistics",
           totalApprovedLabel: "Total Approved",
           checkedInLabel: "Checked In",
@@ -1290,13 +1480,10 @@
           downloadStarted: "Download started",
           noReportData: "No report data yet",
           noReportDataHint: "Check-in data will appear here during the event",
-          // Batch Report
           batchCheckInReport: "My Batch Check-In Report",
           notCheckedIn: "Not Checked In",
-          // Gate admin creation
           gateAdminLimit: "Maximum 6 Gate Admins allowed",
           gateAdminCreated: "Gate Admin created successfully",
-          // Settings
           saveSettingsBtn: "Save Settings",
         },
         bn: {
@@ -1496,6 +1683,7 @@
           registrationStatusLabel: "নিবন্ধনের অবস্থা",
           eventDateLabel: "অনুষ্ঠানের তারিখ",
           venueLabel: "স্থান",
+          timeLabel: "সময়",
           registrationDeadlineLabel: "নিবন্ধনের শেষ তারিখ",
           eventStartTimeLabel: "অনুষ্ঠান শুরুর সময়",
           eventEndTimeLabel: "অনুষ্ঠান শেষের সময়",
@@ -1547,7 +1735,11 @@
           adminButton: "অ্যাডমিন তৈরি করুন",
           showing: "দেখানো হচ্ছে",
           of: "এর মধ্যে",
-          // ⭐ Gate & Report (Bengali)
+          countDownLabel: "কাউন্টডাউন",
+          daysLabel: "দিন",
+          hoursLabel: "ঘন্টা",
+          minutesLabel: "মিনিট",
+          secondsLabel: "সেকেন্ট",
           scannerTab: "স্ক্যানার",
           myReportTab: "আমার রিপোর্ট",
           eventNotStarted: "অনুষ্ঠান এখনো শুরু হয়নি",
@@ -1620,6 +1812,7 @@
         },
       };
 
+      // Translation helper
       function t(key) {
         return (
           (translations[State.language] && translations[State.language][key]) ||
@@ -1627,7 +1820,10 @@
         );
       }
 
-      // ==================== UTILITY ====================
+      /* ============================================================
+       * UTILITIES
+       * ============================================================ */
+      // Show floating toast notification
       function showToast(message, type) {
         type = type || "success";
         const colors = {
@@ -1650,6 +1846,7 @@
         }, 3000);
       }
 
+      // Format number with Bangla digits if language is bn
       function formatNumber(num) {
         if (num === null || num === undefined) return "0";
         if (State.language === "bn") {
@@ -1659,6 +1856,7 @@
         return String(num);
       }
 
+      // Format currency with thousands separator
       function formatCurrency(amount) {
         const num = parseFloat(amount) || 0;
         const formatted = num
@@ -1668,6 +1866,7 @@
         return "৳ " + formatNumber(formatted);
       }
 
+      // Parse various date formats into Date
       function parseDateValue(dateStr) {
         if (!dateStr) return null;
         if (dateStr instanceof Date) return dateStr;
@@ -1740,6 +1939,7 @@
         return null;
       }
 
+      // Format DOB for display (respects language)
       function formatDob(dateStr) {
         if (!dateStr) return "-";
         var s = String(dateStr).trim().replace(/^'/, "");
@@ -1819,6 +2019,7 @@
         return s || "-";
       }
 
+      // Convert DOB display string to <input type="date"> format
       function dobToInputFormat(dob) {
         if (!dob) return "";
         var s = String(dob).trim().replace(/^'/, "");
@@ -1851,6 +2052,7 @@
         return "";
       }
 
+      // Convert <input type="date"> value to display format
       function inputToDobFormat(inputValue) {
         if (!inputValue) return "";
         if (/^\d{1,2}\s+[A-Za-z]+,\s+\d{4}$/.test(inputValue))
@@ -1880,6 +2082,7 @@
         return inputValue;
       }
 
+      // Live DOB preview (edit modal)
       function onEditDobChange() {
         var input = document.getElementById("editDobInput");
         var preview = document.getElementById("editDobPreview");
@@ -1888,6 +2091,7 @@
         preview.textContent = formatted || "-";
       }
 
+      // Convert any date value to YYYY-MM-DD (input format)
       function dateForInput(value) {
         if (!value) return "";
         const s = String(value).trim();
@@ -1900,6 +2104,7 @@
         return `${y}-${m}-${day}`;
       }
 
+      // Status badge HTML
       function getStatusBadge(status) {
         const badges = {
           Pending: `<span class="px-3 py-1 rounded-full text-xs font-medium badge-pending">${t("statusPending")}</span>`,
@@ -1909,6 +2114,7 @@
         return badges[status] || status;
       }
 
+      // Student status badge (also covers "Unregistered")
       function getStudentStatusBadge(student) {
         var status = String(student.Registration_Status || "").trim();
         var regId = String(student.Registration_ID || "").trim();
@@ -1923,6 +2129,7 @@
         return `<span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Unregistered</span>`;
       }
 
+      // TrxID placeholder per method
       function getTrxPlaceholder(method) {
         if (method === "bkash")
           return State.language === "bn"
@@ -1941,6 +2148,7 @@
         return "";
       }
 
+      // TrxID validation hint
       function getTrxHint(method) {
         if (method === "bkash")
           return "bKash TrxID must be 10 characters (A-Z, 0-9)";
@@ -1950,6 +2158,7 @@
         return "Invalid transaction ID";
       }
 
+      // Sanitize TrxID input as user types
       function onTrxInput(event, method) {
         let v = event.target.value;
         if (method === "rocket") v = v.replace(/\D/g, "").slice(0, 10);
@@ -1967,6 +2176,7 @@
         event.target.value = v;
       }
 
+      // Numeric-only input
       function onNumericInput(event, maxLen) {
         var v = event.target.value;
         v = v.replace(/\D/g, "");
@@ -1974,6 +2184,7 @@
         event.target.value = v;
       }
 
+      // Clamp participants between 1 and 10
       function onParticipantsInput(event) {
         var v = event.target.value.replace(/\D/g, "");
         if (v === "") {
@@ -1986,6 +2197,7 @@
         event.target.value = String(n);
       }
 
+      // Uppercase, letters/dots/spaces only (name fields)
       function onNameInput(event) {
         var v = event.target.value;
         v = v.replace(/[^A-Za-z.\s]/g, "");
@@ -1996,6 +2208,7 @@
         event.target.value = v;
       }
 
+      // Debounce helper
       function debounce(fn, wait) {
         let timeout;
         return function (...args) {
@@ -2008,6 +2221,7 @@
         return new Date().getFullYear();
       }
 
+      // Extract event year from settings
       function getEventYear() {
         const s = State.settings || {};
         const eventDate = s.Event_Date || "";
@@ -2016,6 +2230,7 @@
         return 2026;
       }
 
+      // Get event name (with current year)
       function getEventName() {
         const s = State.settings || {};
         let name = s.Event_Name || "Porabari High School Reunion Ceremony";
@@ -2024,6 +2239,7 @@
         return name + " " + year;
       }
 
+      // Render payment method logo/icon
       function renderPaymentLogo(m) {
         if (m.type === "svg" && m.id === "bkash") {
           return `<svg xmlns="http://www.w3.org/2000/svg" width="70" viewBox="0 0 122 54" class="payment-logo"><title>bKash</title><g fill="#E2136E"><path d="m82.9 25.9 3.3 14.6 21.5-10.7zM89 3.8 83.2 25l24 3.8zM62.8.6l25.5 3.1-6 21.8zM62.5 4.8h3l8 10.3zM108.4 29.6l-7.5-10.3 12-2.3zM107.2 32.5l.7-2.2-18.7 9.6zM82.4 26.3 86.3 44l-11.6 9.4zM111.8 22.3h7l-5.1-5.1z" /></g><path fill="#E2136E" d="M5.4 21.2h15.2v2.2H5.2v17.8s-.7-.1-1.1-.1c-.4 0-.9.1-.9.1V21.1c0-5.2 2-8.2 7-8.5 4.5-.3 8 2.3 10.4 3.6v2.6l-.3.1c-.4-1-5.8-5.5-9.3-5.1-3.6.4-5.8 2.9-5.8 6.2 0 0 0 .9.2 1.2z" /><path fill="#E2136E" d="M36.6 24.9c3.8-.1 5.7 1.2 5.8 4.1.1 1.6-.6 3.1-1.7 4.4l-1.9.1v-.3c.7-.2 2.3-1.3 2.2-3.3s-1.6-3.6-4-3.5c0 0-.4 0-.6.1l.2-1.6z" /><path fill="#E2136E" d="M18.5 23h2.1v18.2l-2.1-.7z" /><path fill="#E2136E" d="M57.3 25.5c-.8-2.7-3.1-4.3-4.8-4.3H48v2.2h3c1.3 0 2.6-.1 3.8 1 .5.5.7 1 .9 1.7.4 1.7-.4 3.8-2.4 3.8-.6 0-1.3 0-1.9-.2v.1c.5.6.8 1.4 1.2 2.1 1.2-.2 2.4-.9 3.2-1.7 1.1-1.3 1.8-2.9 1.5-4.7" /><path fill="#E2136E" d="M60.6 21.5c-1.3.2-3.3 1.3-4 4.1-.2 1.8.3 3.4 1.5 4.6.7.8 1.8 1.5 2.8 1.7.3-.7.7-1.4 1.1-2.1l-.1-.1c-.5.2-1.1.2-1.7.2-2.1-.1-2.4-2.2-2.1-3.8.3-1.4 1.5-2.8 2.8-2.9 1.4-.1 3.1 1 3.4 2.5.2.8.2 1.6.2 2.4v13.2s.6-.1 1-.1 1 .1 1 .1V21.4h-2.2v2.2c0-.1.1-.1 0-.3-.7-1.3-2.5-2-3.7-1.8M47.6 21.2v20s-.6-.1-1-.1-1 .1-1 .1V23.4H21.1v-2.2h26.5z" /><path fill="#E2136E" d="M20.6 41.2h-.3c-7.8 0-12.2-4.3-12.2-8.6 0-3.6 3.3-7.8 10.9-7.8l1.3 1c-5.3 0-9.6 3.4-9.6 6.8 0 3 3.8 7.8 9.9 7.8v.8z" /><path fill="#E2136E" d="M34.8 23h2.1v18.2l-2.1-.7z" /><path fill="#E2136E" d="M36.9 41.2h-.3c-7.8 0-12.2-4.3-12.2-8.6 0-3.6 3.3-7.8 10.9-7.8l1.3 1c-5.3 0-9.6 3.4-9.6 6.8 0 3 3.8 7.8 9.9 7.8v.8z" /></svg>`;
@@ -2035,7 +2251,9 @@
         return "";
       }
 
-      // ==================== ERROR HANDLING ====================
+      /* ============================================================
+       * ERROR HANDLING
+       * ============================================================ */
       function getErrorMessage(error, httpStatus) {
         if (httpStatus === 404) return t("serverNotFound");
         if (httpStatus === 403) return t("forbidden403");
@@ -2061,7 +2279,9 @@
         return error && error.message ? error.message : t("serverError");
       }
 
-      // ==================== API ====================
+      /* ============================================================
+       * API CALL (fetch + retry + timeout)
+       * ============================================================ */
       async function apiCall(action, data = {}, options = {}) {
         const retries =
           options.retries !== undefined ? options.retries : CONFIG.MAX_RETRIES;
@@ -2101,6 +2321,7 @@
             if (!skipLoading) hideLoading();
 
             if (result.error) {
+              // Session expired → redirect to login
               if (result.error === "SESSION_EXPIRED") {
                 State.session = null;
                 State.adminData = null;
@@ -2182,8 +2403,11 @@
         if (loader) loader.classList.add("hidden");
       }
 
-      // ==================== NAVIGATION ====================
+      /* ============================================================
+       * NAVIGATION
+       * ============================================================ */
       function navigateTo(page, data) {
+        // Stop countdowns/camera on route change
         if (_gateCountdownInterval) {
           clearInterval(_gateCountdownInterval);
           _gateCountdownInterval = null;
@@ -2196,6 +2420,7 @@
         window.scrollTo(0, 0);
         renderApp();
 
+        // Generate QR codes after ID card page renders
         if (page === "idCard" && State.pageData && State.pageData.students) {
           setTimeout(function () {
             generateQrCodesAsync(State.pageData.students).catch(function (e) {
@@ -2249,9 +2474,36 @@
             renderBulkStudentsTable();
           }, 50);
         }
+
+        // Start home countdown timers
+        if (State.currentPage === "home") {
+          setTimeout(function () {
+            // Parse event date (assume 8:00 AM)
+            const parsedDate = parseDateValue(State.settings.Event_Date || "");
+            let eventTime = 0;
+            if (parsedDate) {
+              parsedDate.setHours(8, 0, 0, 0);
+              eventTime = parsedDate.getTime();
+            }
+
+            // Parse deadline (assume 11:59 PM)
+            const deadlineParsed = parseDateValue(
+              State.settings.Registration_Deadline || "",
+            );
+            let deadlineTime = 0;
+            if (deadlineParsed) {
+              deadlineParsed.setHours(23, 59, 59, 0);
+              deadlineTime = deadlineParsed.getTime();
+            }
+
+            startHomeCountdown(eventTime, deadlineTime);
+          }, 100);
+        }
       }
 
-      // ==================== HOME PAGE ====================
+      /* ============================================================
+       * HOME PAGE
+       * ============================================================ */
       function renderHome() {
         const s = State.settings || {};
         const eventName = getEventName();
@@ -2266,62 +2518,145 @@
         const registrationOpen =
           String(s.Registration_Open).toLowerCase() === "true";
         const closedBanner = !registrationOpen
-          ? `<div class="banner-closed">⚠️ ${t("registrationClosed")}</div>`
+          ? `<div class="banner-closed py-2 text-sm">⚠️ ${t("registrationClosed")}</div>`
           : "";
 
         return `
-        <div class="min-h-screen">
-            ${closedBanner}
-            <header class="bg-white shadow-md sticky top-0 z-40">
-                <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center"><i class="fas fa-graduation-cap text-white text-xl"></i></div>
-                        <div><h1 class="font-bold text-gray-800 text-lg">${eventName}</h1><p class="text-xs text-gray-500">${formatNumber(year)}</p></div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleLanguage()" class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium"><i class="fas fa-globe mr-1"></i>${State.language === "bn" ? "EN" : "বাং"}</button>
-                        <button onclick="navigateTo('login')" class="px-4 py-2 rounded-lg btn-primary text-sm font-medium"><i class="fas fa-lock mr-1"></i>${t("adminLogin")}</button>
-                    </div>
-                </div>
-            </header>
-            <section class="py-16 px-4">
-                <div class="max-w-4xl mx-auto text-center text-white">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4">${t("welcomeTitle")}</h1>
-                    <p class="text-xl md:text-2xl mb-2 opacity-90">${t("welcomeSubtitle")}</p>
-                    <p class="text-lg opacity-80 mb-8 max-w-2xl mx-auto">${t("eventInfo")}</p>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <button ${registrationOpen ? `onclick="navigateTo('registration')"` : `disabled title="${t("registrationClosed")}"`} class="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:shadow-xl transition-all hover:-translate-y-1 ${!registrationOpen ? "opacity-50 cursor-not-allowed" : ""}"><i class="fas fa-user-plus mr-2"></i>${t("registerNow")}</button>
-                        <button onclick="navigateTo('checkStatus')" class="px-8 py-4 bg-purple-700 text-white rounded-xl font-bold text-lg hover:bg-purple-800 transition-all hover:-translate-y-1"><i class="fas fa-search mr-2"></i>${t("checkRegistration")}</button>
-                    </div>
-                </div>
-            </section>
-            <section class="max-w-4xl mx-auto px-4 pb-16">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="card p-6">
-                        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center"><i class="fas fa-bullhorn text-yellow-600"></i></div><h2 class="font-bold text-lg text-gray-800">${t("importantNotice")}</h2></div>
-                        <div class="text-gray-600 space-y-2 text-sm">
-                            <p>• ${t("registrationDeadlineLabel")}: <span class="font-bold text-red-600">${deadline}</span></p>
-                            <p>• ${t("eventDateLabel")}: <span class="font-bold text-green-600">${eventDate}</span></p>
-                            <p>• ${t("venueLabel")}: <span class="font-bold text-green-600">${venue}</span></p>
-                            <p>• ${State.language === "bn" ? "পেমেন্ট সম্পন্ন করে ট্রানজেকশন আইডি সংরক্ষণ করুন" : "Complete payment and save transaction ID"}</p>
-                            <p>• ${State.language === "bn" ? "নিবন্ধন ছাড়া অনুষ্ঠানে প্রবেশ করা যাবে না" : "Entry without registration will not be allowed"}</p>
+        <div class="min-h-screen flex flex-col justify-between">
+            <div>
+                ${closedBanner}
+                <!-- Compact header -->
+                <header class="bg-white shadow-sm sticky top-0 z-40">
+                    <div class="max-w-6xl mx-auto px-4 py-2 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center"><i class="fas fa-graduation-cap text-white text-lg"></i></div>
+                            <div><h1 class="font-bold text-gray-800 text-base">${eventName}</h1><p class="text-[10px] text-gray-500">${formatNumber(year)}</p></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleLanguage()" class="px-2 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-xs font-medium"><i class="fas fa-globe mr-1"></i>${State.language === "bn" ? "EN" : "বাং"}</button>
+                            <button onclick="navigateTo('login')" class="px-3 py-1.5 rounded-lg btn-primary text-xs font-medium"><i class="fas fa-lock mr-1"></i>${t("adminLogin")}</button>
                         </div>
                     </div>
-                    <div class="card p-6">
-                        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-phone text-blue-600"></i></div><h2 class="font-bold text-lg text-gray-800">${t("contactInfo")}</h2></div>
-                        <div class="text-gray-600 space-y-3 text-sm">
-                            <p><i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>${venue}</p>
-                            <p><i class="fas fa-phone mr-2 text-gray-400"></i>${contactNumber}</p>
-                            <p><i class="fas fa-envelope mr-2 text-gray-400"></i>${contactEmail}</p>
+                </header>
+
+                <!-- Hero -->
+                <section class="py-6 md:py-8 px-4">
+                    <div class="max-w-4xl mx-auto text-center text-white">
+                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">${t("welcomeTitle")}</h1>
+                        <p class="text-base md:text-lg mb-1 opacity-90">${t("welcomeSubtitle")}</p>
+                        <p class="text-xs md:text-sm opacity-80 mb-5 max-w-2xl mx-auto">${t("eventInfo")}</p>
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <button ${registrationOpen ? `onclick="navigateTo('registration')"` : `disabled title="${t("registrationClosed")}"`} class="px-6 py-2.5 bg-white text-purple-600 rounded-lg font-bold text-sm hover:shadow-lg transition-all hover:-translate-y-0.5 ${!registrationOpen ? "opacity-50 cursor-not-allowed" : ""}"><i class="fas fa-user-plus mr-1.5"></i>${t("registerNow")}</button>
+                            <button onclick="navigateTo('checkStatus')" class="px-6 py-2.5 bg-purple-700 text-white rounded-lg font-bold text-sm hover:bg-purple-800 transition-all hover:-translate-y-0.5"><i class="fas fa-search mr-1.5"></i>${t("checkRegistration")}</button>
                         </div>
                     </div>
-                </div>
-            </section>
-            <footer class="bg-gray-800 text-white py-6 text-center text-sm"><p>© ${formatNumber(currentYear)} ${eventName}</p></footer>
+                </section>
+
+                <!-- Countdowns + Notice -->
+                <section class="max-w-4xl mx-auto px-4 pb-4 space-y-4">
+                    
+                    <!-- Registration deadline countdown -->
+                    <div class="card p-3 md:p-4 bg-white bg-opacity-95 shadow-md border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-clock text-red-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-gray-800 text-sm">${State.language === "bn" ? "নিবন্ধনের শেষ সময় বাকি" : "Registration Deadline Countdown"}</h2>
+                                <p class="text-[10px] text-gray-500">${deadline}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center gap-2">
+                            <div class="bg-red-50 border border-red-100 rounded-lg p-1.5 w-14 text-center shadow-sm">
+                                <p id="dlDays" class="text-base md:text-lg font-bold text-red-600">--</p>
+                                <p class="text-[9px] text-gray-500 font-medium">${State.language === "bn" ? "দিন" : "Days"}</p>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 rounded-lg p-1.5 w-14 text-center shadow-sm">
+                                <p id="dlHours" class="text-base md:text-lg font-bold text-red-600">--</p>
+                                <p class="text-[9px] text-gray-500 font-medium">${State.language === "bn" ? "ঘন্টা" : "Hours"}</p>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 rounded-lg p-1.5 w-14 text-center shadow-sm">
+                                <p id="dlMins" class="text-base md:text-lg font-bold text-red-600">--</p>
+                                <p class="text-[9px] text-gray-500 font-medium">${State.language === "bn" ? "মিনিট" : "Mins"}</p>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 rounded-lg p-1.5 w-14 text-center shadow-sm">
+                                <p id="dlSecs" class="text-base md:text-lg font-bold text-red-600">--</p>
+                                <p class="text-[9px] text-gray-500 font-medium">${State.language === "bn" ? "সেকেন্ড" : "Secs"}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notice + Event countdown -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="card p-4">
+                            <div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center"><i class="fas fa-bullhorn text-yellow-600 text-sm"></i></div><h2 class="font-bold text-sm text-gray-800">${t("importantNotice")}</h2></div>
+                            <div class="text-gray-600 space-y-1.5 text-xs">
+                                <p>• ${t("registrationDeadlineLabel")}: <span class="font-bold text-red-600">${deadline}</span></p>
+                                <p>• ${t("eventDateLabel")}: <span class="font-bold text-green-600">${eventDate}</span></p>
+                                <p>• ${t("venueLabel")}: <span class="font-bold text-green-600">${venue}</span></p>
+                                <p>• ${State.language === "bn" ? "পেমেন্ট সম্পন্ন করে ট্রানজেকশন আইডি সংরক্ষণ করুন" : "Complete payment and save transaction ID"}</p>
+                                <p>• ${State.language === "bn" ? "নিবন্ধন ছাড়া অনুষ্ঠানে প্রবেশ করা যাবে না" : "Entry without registration will not be allowed"}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card p-4 flex flex-col justify-center">
+                            <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center"><i class="fas fa-hourglass-half text-purple-600 text-sm"></i></div><h2 class="font-bold text-sm text-gray-800">${State.language === "bn" ? "ইভেন্ট শুরু হতে বাকি" : "Event Countdown"}</h2></div>
+                            <div id="homeCountdown" class="flex justify-center gap-2">
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 w-14 md:w-16 text-center shadow-sm">
+                                    <p id="hcDays" class="text-lg md:text-xl font-bold text-purple-700">--</p>
+                                    <p class="text-[9px] text-gray-500 font-medium mt-0.5">${State.language === "bn" ? "দিন" : "Days"}</p>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 w-14 md:w-16 text-center shadow-sm">
+                                    <p id="hcHours" class="text-lg md:text-xl font-bold text-purple-700">--</p>
+                                    <p class="text-[9px] text-gray-500 font-medium mt-0.5">${State.language === "bn" ? "ঘন্টা" : "Hours"}</p>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 w-14 md:w-16 text-center shadow-sm">
+                                    <p id="hcMins" class="text-lg md:text-xl font-bold text-purple-700">--</p>
+                                    <p class="text-[9px] text-gray-500 font-medium mt-0.5">${State.language === "bn" ? "মিনিট" : "Mins"}</p>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 w-14 md:w-16 text-center shadow-sm">
+                                    <p id="hcSecs" class="text-lg md:text-xl font-bold text-purple-700">--</p>
+                                    <p class="text-[9px] text-gray-500 font-medium mt-0.5">${State.language === "bn" ? "সেকেন্ড" : "Secs"}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <div>
+                <section class="max-w-4xl mx-auto px-4 pb-4">
+                    <div class="card p-3 bg-white bg-opacity-95 shadow-md">
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-headset text-blue-600 text-sm"></i></div>
+                                <div>
+                                    <h2 class="font-bold text-sm text-gray-800">${t("contactInfo")}</h2>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row items-center gap-3 md:gap-6 text-xs text-gray-700">
+                                <p><i class="fas fa-map-marker-alt mr-1 text-blue-500"></i> ${venue}</p>
+                                <p><i class="fas fa-phone mr-1 text-green-500"></i> ${contactNumber}</p>
+                                <p><i class="fas fa-envelope mr-1 text-purple-500"></i> ${contactEmail}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="text-white py-3 text-center text-xs" style="background: linear-gradient(135deg, #1e1b4b 0%, #111827 100%);">
+                    <p>© ${formatNumber(currentYear)} ${eventName}</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">Developed by <span class="text-gray-300 font-medium">Md Sojib Hossen</span></p>
+                </footer>
+            </div>
         </div>`;
       }
 
-      // ==================== REGISTRATION WIZARD ====================
+      /* ============================================================
+       * REGISTRATION WIZARD (Steps 1-6)
+       * ============================================================ */
       function renderRegistration() {
         const step = State.currentStep;
         return `
@@ -2575,7 +2910,9 @@
         </div>`;
       }
 
-      // ==================== EDIT / DELETE STUDENT ====================
+      /* ============================================================
+       * EDIT / DELETE STUDENT MODALS
+       * ============================================================ */
       function showEditStudentModal(batch, studentId) {
         var student = null;
         for (var i = 0; i < (State.students || []).length; i++) {
@@ -2744,7 +3081,9 @@
         }
       }
 
-      // ==================== CHECK STATUS ====================
+      /* ============================================================
+       * CHECK STATUS PAGE
+       * ============================================================ */
       function renderCheckStatus() {
         return `
         <div class="min-h-screen py-8 px-4">
@@ -2793,7 +3132,9 @@
         </div>`;
       }
 
-      // ==================== RESUBMIT ====================
+      /* ============================================================
+       * RESUBMIT REJECTED REGISTRATION
+       * ============================================================ */
       async function goToResubmit(regId) {
         const result = await apiCall("getRegistration", {
           registrationId: regId,
@@ -2829,6 +3170,7 @@
         }
       }
 
+      // Normalize phone to BD format
       function normalizeClientPhone(v) {
         if (!v) return "";
         var s = String(v).replace(/[^\d]/g, "");
@@ -3004,6 +3346,7 @@
       function onResubmitProfessionChange(profession) {
         const d = State.registrationData;
         d.profession = profession;
+        // Persist current values
         d.phone =
           (document.getElementById("resubmitPhone") &&
             document.getElementById("resubmitPhone").value.trim()) ||
@@ -3217,6 +3560,7 @@
         btn.disabled = true;
         const d = State.registrationData;
         const reg = State.resubmitData;
+        // Guard: batch admin must be active
         if (d.paymentNumber) {
           if (d.paymentNumber.adminAssigned === false) {
             btn.innerHTML = original;
@@ -3309,7 +3653,9 @@
         }
       }
 
-      // ==================== RECEIPT ====================
+      /* ============================================================
+       * RECEIPT VIEW
+       * ============================================================ */
       function renderReceipt() {
         const reg = State.pageData.registration;
         if (!reg) {
@@ -3368,7 +3714,9 @@
         </div>`;
       }
 
-      // ==================== LOGIN ====================
+      /* ============================================================
+       * ADMIN LOGIN
+       * ============================================================ */
       function renderLogin() {
         return `
         <div class="min-h-screen flex items-center justify-center py-8 px-4">
@@ -3389,7 +3737,9 @@
         </div>`;
       }
 
-      // ==================== DASHBOARD ====================
+      /* ============================================================
+       * DASHBOARD
+       * ============================================================ */
       function renderDashboard() {
         const admin = State.adminData;
         if (!admin) {
@@ -3515,7 +3865,7 @@
         </div>`;
       }
 
-      // ⭐ Batch Admin Check-In Report (below Overview)
+      // Batch admin check-in report (below Overview)
       function renderBatchCheckInReportBlock() {
         const r = State.batchReport;
         if (!r) {
@@ -3598,7 +3948,9 @@
         }
       }
 
-      // ==================== SUPER ADMIN REPORT TAB ====================
+      /* ============================================================
+       * SUPER ADMIN REPORT TAB
+       * ============================================================ */
       function renderSuperAdminReport() {
         const r = State.superReport;
         if (!r || !r.summary) {
@@ -3619,7 +3971,7 @@
         const s = r.summary;
         return `
         <div class="space-y-6">
-            <!-- Header with buttons -->
+            <!-- Header -->
             <div class="flex flex-wrap justify-between items-center gap-2">
                 <h3 class="font-bold text-lg text-gray-800"><i class="fas fa-chart-bar mr-2 text-purple-600"></i>${t("reportTab")}</h3>
                 <div class="flex gap-2">
@@ -3629,7 +3981,7 @@
                 </div>
             </div>
 
-            <!-- Overall Stats -->
+            <!-- Overall stats -->
             <div class="card p-4">
                 <h4 class="font-bold text-gray-800 mb-4">${t("overallStats")}</h4>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -3652,7 +4004,7 @@
                 </div>
             </div>
 
-            <!-- By Admin -->
+            <!-- By admin -->
             <div class="card p-4">
                 <h4 class="font-bold text-gray-800 mb-4">${t("byAdmin")}</h4>
                 ${
@@ -3678,7 +4030,7 @@
                 }
             </div>
 
-            <!-- By Batch -->
+            <!-- By batch -->
             <div class="card p-4">
                 <h4 class="font-bold text-gray-800 mb-4">${t("byBatch")}</h4>
                 <div class="table-responsive">
@@ -3705,7 +4057,7 @@
                 </div>
             </div>
 
-            <!-- By Hour -->
+            <!-- By hour -->
             <div class="card p-4">
                 <h4 class="font-bold text-gray-800 mb-4">${t("byHour")}</h4>
                 ${
@@ -3746,7 +4098,7 @@
                 </div>
             </div>
 
-            <!-- Live Feed -->
+            <!-- Live feed -->
             <div class="card p-4">
                 <h4 class="font-bold text-gray-800 mb-4">${t("liveFeed")}</h4>
                 <div class="space-y-2 max-h-96 overflow-y-auto">
@@ -3841,7 +4193,9 @@
         }
       }
 
-      // ==================== GATE ADMIN DASHBOARD ⭐ ====================
+      /* ============================================================
+       * GATE ADMIN DASHBOARD
+       * ============================================================ */
       function renderGateDashboard() {
         const admin = State.adminData;
         if (!admin || admin.Role !== "GATE_ADMIN") {
@@ -3901,9 +4255,9 @@
             <h2 class="text-2xl font-bold text-gray-800 mb-2">⏰ ${t("eventNotStarted")}</h2>
             <p class="text-gray-600 mb-6">${t("pleaseWait")} <b>${gs.eventDate || ""}</b></p>
             <div class="bg-blue-50 rounded-xl p-4 mb-6 text-left space-y-2">
-                <p class="text-sm"><span class="text-gray-600">📅 Event Date:</span> <b>${gs.eventDate || ""}</b></p>
-                <p class="text-sm"><span class="text-gray-600">⏰ Time:</span> <b>${gs.eventStartTime || ""} - ${gs.eventEndTime || ""}</b></p>
-                <p class="text-sm"><span class="text-gray-600">🎯 Venue:</span> <b>${gs.eventVenue || ""}</b></p>
+                <p class="text-sm"><span class="text-gray-600">📅 ${t("eventDateLabel")}:</span> <b>${gs.eventDate || ""}</b></p>
+                <p class="text-sm"><span class="text-gray-600">⏰ ${t("timeLabel")}:</span> <b>${gs.eventStartTime || ""} - ${gs.eventEndTime || ""}</b></p>
+                <p class="text-sm"><span class="text-gray-600">🎯 ${t("venueLabel")}:</span> <b>${gs.eventVenue || ""}</b></p>
                 <div class="pt-3 border-t border-blue-200">
                     <p class="text-xs text-gray-600 mb-2">⏳ Countdown:</p>
                     <div id="gateCountdown" class="grid grid-cols-4 gap-2 text-center">
@@ -3962,11 +4316,10 @@
         <div class="card p-4 mb-4">
             <h3 class="font-bold mb-3"><i class="fas fa-camera mr-2"></i>${t("scanQRCode")}</h3>
 
-            <!-- Scanner Container -->
+            <!-- Scanner -->
             <div id="scannerContainer" class="scanner-container mb-3">
                 <video id="qrVideo" autoplay playsinline muted style="display:none;"></video>
 
-                <!-- Placeholder (shown when camera off) -->
                 <div id="qrPlaceholder" class="scanner-placeholder">
                     <div class="text-center">
                         <i class="fas fa-camera text-5xl mb-2 opacity-50"></i>
@@ -3974,16 +4327,13 @@
                     </div>
                 </div>
 
-                <!-- Corners -->
                 <div class="scanner-corner scanner-corner-tl"></div>
                 <div class="scanner-corner scanner-corner-tr"></div>
                 <div class="scanner-corner scanner-corner-bl"></div>
                 <div class="scanner-corner scanner-corner-br"></div>
 
-                <!-- Animated scan line -->
                 <div id="scannerLine" class="scanner-line" style="display:none;"></div>
 
-                <!-- Timer badge -->
                 <div id="scannerTimer" class="scanner-timer" style="display:none;">
                     <i class="fas fa-spinner fa-spin"></i>
                     <span id="scannerTimerText">5s</span>
@@ -4119,11 +4469,12 @@
         }
       }
 
-      // ==================== LIVE COUNTDOWN TIMER ====================
+      /* ============================================================
+       * LIVE COUNTDOWN TIMERS
+       * ============================================================ */
       let _gateCountdownInterval = null;
 
       function startGateCountdown(targetTimestamp) {
-        // Clear any existing interval
         if (_gateCountdownInterval) {
           clearInterval(_gateCountdownInterval);
           _gateCountdownInterval = null;
@@ -4136,7 +4487,6 @@
         function update() {
           var elDays = document.getElementById("cdDays");
           if (!elDays) {
-            // DOM no longer has countdown — stop interval
             if (_gateCountdownInterval) {
               clearInterval(_gateCountdownInterval);
               _gateCountdownInterval = null;
@@ -4148,7 +4498,6 @@
           var diff = target - now;
 
           if (diff <= 0) {
-            // Event just started — stop and reload dashboard
             document.getElementById("cdDays").textContent = "0";
             document.getElementById("cdHours").textContent = "0";
             document.getElementById("cdMinutes").textContent = "0";
@@ -4157,7 +4506,7 @@
               clearInterval(_gateCountdownInterval);
               _gateCountdownInterval = null;
             }
-            // Auto-refresh dashboard to enter scanning mode
+            // Auto-refresh to scanning mode
             setTimeout(async function () {
               await loadGateDashboard();
               renderApp();
@@ -4172,7 +4521,6 @@
           var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           var seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-          // Format with 2 digits (except days)
           var dEl = document.getElementById("cdDays");
           var hEl = document.getElementById("cdHours");
           var mEl = document.getElementById("cdMinutes");
@@ -4186,11 +4534,13 @@
             sEl.textContent = formatNumber(String(seconds).padStart(2, "0"));
         }
 
-        update(); // run immediately
+        update();
         _gateCountdownInterval = setInterval(update, 1000);
       }
 
-      // ==================== QR SCANNER (Camera with 5s Cycle) ====================
+      /* ============================================================
+       * QR SCANNER (Camera + 5s Cycle)
+       * ============================================================ */
       const SCAN_CYCLE_SECONDS = 5;
 
       async function toggleCamera() {
@@ -4230,7 +4580,6 @@
       }
 
       function stopCamera() {
-        // Clear cycle timer
         if (State.scanCycleTimer) {
           clearInterval(State.scanCycleTimer);
           State.scanCycleTimer = null;
@@ -4240,7 +4589,6 @@
           State.scanFrameTimer = null;
         }
 
-        // Stop camera stream
         if (State.cameraStream) {
           State.cameraStream.getTracks().forEach((tr) => tr.stop());
           State.cameraStream = null;
@@ -4262,15 +4610,8 @@
           btn.innerHTML = `<i class="fas fa-camera mr-2"></i>${t("startCamera")}`;
       }
 
-      /**
-       * Start a 5-second scan cycle:
-       * - Animated line sweeps
-       * - Timer counts down 5→0
-       * - If QR detected → stop, show modal
-       * - If not → restart cycle
-       */
+      // 5-second scan cycle: line sweeps, timer counts down, QR detected → stop
       function startScanCycle() {
-        // Clear any old timers
         if (State.scanCycleTimer) {
           clearInterval(State.scanCycleTimer);
           State.scanCycleTimer = null;
@@ -4280,18 +4621,15 @@
           State.scanFrameTimer = null;
         }
 
-        // Ensure jsQR loaded
         if (typeof jsQR === "undefined") {
           console.warn("jsQR not loaded — camera scanning disabled");
           return;
         }
 
-        // Restart line animation
         const line = document.getElementById("scannerLine");
         if (line) {
           line.classList.remove("paused");
           line.style.display = "block";
-          // Restart animation by re-triggering
           line.style.animation = "none";
           void line.offsetWidth;
           line.style.animation = "scanLine 2.5s ease-in-out infinite";
@@ -4300,33 +4638,29 @@
         let secondsLeft = SCAN_CYCLE_SECONDS;
         updateTimerDisplay(secondsLeft);
 
-        // Countdown timer — 1s interval
         State.scanCycleTimer = setInterval(function () {
           secondsLeft--;
           updateTimerDisplay(secondsLeft);
 
           if (secondsLeft <= 0) {
-            // Cycle complete — restart
             clearInterval(State.scanCycleTimer);
             State.scanCycleTimer = null;
             if (State.scanFrameTimer) {
               clearInterval(State.scanFrameTimer);
               State.scanFrameTimer = null;
             }
-            // Restart if camera still on
             if (State.cameraStream) {
               startScanCycle();
             }
           }
         }, 1000);
 
-        // Frame scan — check for QR every 250ms
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         State.scanFrameTimer = setInterval(function () {
           const video = document.getElementById("qrVideo");
           if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) return;
-          if (!State.cameraStream) return; // camera stopped
+          if (!State.cameraStream) return;
 
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -4346,16 +4680,14 @@
               { inversionAttempts: "dontInvert" },
             );
             if (code && code.data) {
-              // QR detected! Stop everything
               handleQrDetected(code.data);
             }
           } catch (e) {}
         }, 250);
       }
 
-      /** Called when a QR code is detected in the scan cycle. */
+      // Called when a QR is detected in the scan cycle
       function handleQrDetected(qrData) {
-        // Stop cycle
         if (State.scanCycleTimer) {
           clearInterval(State.scanCycleTimer);
           State.scanCycleTimer = null;
@@ -4365,13 +4697,11 @@
           State.scanFrameTimer = null;
         }
 
-        // Pause line and hide timer
         const line = document.getElementById("scannerLine");
         if (line) line.classList.add("paused");
         const timer = document.getElementById("scannerTimer");
         if (timer) timer.style.display = "none";
 
-        // Success flash
         const container = document.getElementById("scannerContainer");
         if (container) {
           container.classList.add("success");
@@ -4380,7 +4710,7 @@
           }, 1000);
         }
 
-        // Play a beep (optional)
+        // Beep
         try {
           const audioCtx = new (
             window.AudioContext || window.webkitAudioContext
@@ -4395,12 +4725,11 @@
           osc.stop(audioCtx.currentTime + 0.15);
         } catch (e) {}
 
-        // Extract Registration ID
+        // Extract Registration ID (accept full URL or raw)
         let regId = qrData;
         const m = qrData.match(/verify=([A-Z0-9]+)/i);
         if (m) regId = m[1];
 
-        // Process scan (async)
         processScan(regId);
       }
 
@@ -4409,7 +4738,6 @@
         if (el) el.textContent = seconds + "s";
       }
 
-      /** Stop the cycle and let the caller decide what to do next. */
       function pauseScanCycle() {
         if (State.scanCycleTimer) {
           clearInterval(State.scanCycleTimer);
@@ -4425,9 +4753,8 @@
         if (timer) timer.style.display = "none";
       }
 
-      /** Resume scanning (called after modal is closed). */
       function resumeScanCycle() {
-        if (!State.cameraStream) return; // camera off
+        if (!State.cameraStream) return;
         const line = document.getElementById("scannerLine");
         if (line) line.classList.remove("paused");
         const timer = document.getElementById("scannerTimer");
@@ -4448,7 +4775,7 @@
       }
 
       async function processScan(regId) {
-        if (State.scannedStudent && State.scanResultType) return; // already showing a modal
+        if (State.scannedStudent && State.scanResultType) return;
         showLoading("Scanning...");
         const result = await apiCall(
           "scanEntryPass",
@@ -4476,7 +4803,7 @@
             <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" style="backdrop-filter: blur(4px);">
               <div class="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl" style="animation: modalPop 0.3s ease;">
 
-                <!-- Gradient Header -->
+                <!-- Header -->
                 <div class="relative text-center py-6" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
                   <div class="absolute top-3 right-3">
                     <button onclick="closeScanModal()" class="w-8 h-8 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white flex items-center justify-center transition-all">
@@ -4497,20 +4824,14 @@
 
                 <!-- Body -->
                 <div class="px-6 pt-5 pb-2">
-                  <!-- Name -->
                   <h2 class="text-center text-xl font-bold text-gray-800 leading-tight">${s.Student_Name || "-"}</h2>
-
-                  <!-- Registration ID Badge -->
                   <div class="text-center mt-2 mb-5">
                     <span class="inline-block bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-full tracking-wider">
                       <i class="fas fa-id-badge mr-1"></i>${s.Registration_ID || "-"}
                     </span>
                   </div>
 
-                  <!-- Info Grid -->
                   <div class="rounded-2xl overflow-hidden" style="border: 2px solid #e5e7eb;">
-
-                    <!-- Row 1: Batch | Roll -->
                     <div class="grid grid-cols-2 divide-x-2" style="border-bottom: 2px solid #e5e7eb; border-color: #e5e7eb;">
                       <div class="p-3 text-center bg-green-50">
                         <p class="text-xs text-gray-500 flex items-center justify-center gap-1 mb-1"><i class="fas fa-graduation-cap text-green-600"></i> Batch</p>
@@ -4521,8 +4842,6 @@
                         <p class="text-base font-bold text-gray-800">${String(s.SSC_Roll || "").replace(/^'/, "") || "-"}</p>
                       </div>
                     </div>
-
-                    <!-- Row 2: Gender | DOB -->
                     <div class="grid grid-cols-2" style="border-bottom: 2px solid #e5e7eb;">
                       <div class="p-3 text-center">
                         <p class="text-xs text-gray-500 flex items-center justify-center gap-1 mb-1"><i class="fas fa-venus-mars text-blue-500"></i> Gender</p>
@@ -4533,8 +4852,6 @@
                         <p class="text-sm font-bold text-gray-800">${formatDob(s.DOB)}</p>
                       </div>
                     </div>
-
-                    <!-- Row 3: Blood | Participants -->
                     <div class="grid grid-cols-2" style="border-bottom: 2px solid #e5e7eb;">
                       <div class="p-3 text-center">
                         <p class="text-xs text-gray-500 flex items-center justify-center gap-1 mb-1"><i class="fas fa-tint text-red-500"></i> Blood</p>
@@ -4545,8 +4862,6 @@
                         <p class="text-sm font-bold text-gray-800">${formatNumber(s.Participants || "1")}</p>
                       </div>
                     </div>
-
-                    <!-- Row 4: Father | Phone -->
                     <div class="grid grid-cols-2">
                       <div class="p-3 text-center">
                         <p class="text-xs text-gray-500 flex items-center justify-center gap-1 mb-1"><i class="fas fa-male text-orange-500"></i> Father</p>
@@ -4658,7 +4973,6 @@
         if (result && result.success) {
           showToast(t("checkInSuccess"), "success");
           closeScanModal();
-          // ⭐ Just refresh stats + recent list, NOT re-render entire page
           await refreshGateStats();
         } else {
           showToast((result && result.message) || t("checkInFailed"), "error");
@@ -4666,12 +4980,11 @@
         }
       }
 
-      /** Refresh only stats + recent scans without full re-render (keeps camera on). */
+      // Refresh stats + recent scans (without re-render, keeps camera on)
       async function refreshGateStats() {
         const r = await apiCall("getGateDashboard", {}, { skipLoading: true });
         if (!r) return;
         State.gateData = r;
-        // Update stat boxes
         const stats = r.todayStats || { checkIns: 0, duplicate: 0, invalid: 0 };
         const statEls = document.querySelectorAll(
           ".grid.grid-cols-3.gap-3.mb-4 .card p:nth-child(2)",
@@ -4681,7 +4994,6 @@
           statEls[1].textContent = formatNumber(stats.duplicate);
           statEls[2].textContent = formatNumber(stats.invalid);
         }
-        // Update recent scans list
         const recentContainer = document.querySelector(
           ".card:last-child .space-y-2",
         );
@@ -4720,7 +5032,9 @@
         if (r) State.gateData = r;
       }
 
-      // ==================== REGISTRATIONS TAB ====================
+      /* ============================================================
+       * REGISTRATIONS TAB
+       * ============================================================ */
       function renderRegistrations() {
         const regs = State.registrations || [];
         return `
@@ -4798,7 +5112,9 @@
       }
       const filterRegistrationsDebounced = debounce(filterRegistrations, 200);
 
-      // ==================== DELETE REGISTRATION ====================
+      /* ============================================================
+       * DELETE REGISTRATION
+       * ============================================================ */
       function showDeleteRegistrationModal(regId) {
         var reg = null;
         for (var i = 0; i < (State.registrations || []).length; i++) {
@@ -4866,7 +5182,9 @@
         }
       }
 
-      // ==================== ADMINS TAB ====================
+      /* ============================================================
+       * ADMINS TAB
+       * ============================================================ */
       function renderAdmins() {
         const allAdmins = State.admins || [];
         const filterQuery = (State.adminsSearchQuery || "").trim();
@@ -5003,7 +5321,9 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      // ==================== EDIT ADMIN ====================
+      /* ============================================================
+       * EDIT ADMIN
+       * ============================================================ */
       function showEditAdminModal(adminId) {
         let admin = null;
         for (let i = 0; i < State.admins.length; i++) {
@@ -5096,7 +5416,9 @@
         }
       }
 
-      // ==================== TOGGLE ADMIN STATUS ====================
+      /* ============================================================
+       * TOGGLE ADMIN STATUS
+       * ============================================================ */
       async function toggleAdminStatus(adminId) {
         let admin = null;
         for (let i = 0; i < State.admins.length; i++) {
@@ -5120,7 +5442,9 @@
         }
       }
 
-      // ==================== STUDENTS TAB ====================
+      /* ============================================================
+       * STUDENTS TAB
+       * ============================================================ */
       async function searchStudents() {
         var input = document.getElementById("studentSearch");
         if (!input) return;
@@ -5289,7 +5613,9 @@
   </div>`;
       }
 
-      // ==================== BULK ADD ====================
+      /* ============================================================
+       * BULK ADD
+       * ============================================================ */
       function addNewStudentRow() {
         var batch = document.getElementById("addBatchSelect")
           ? document.getElementById("addBatchSelect").value
@@ -5450,7 +5776,9 @@
         }
       }
 
-      // ==================== SETTINGS ====================
+      /* ============================================================
+       * SETTINGS
+       * ============================================================ */
       function renderSettings() {
         const s = State.settings || {};
         const isOpen =
@@ -5513,7 +5841,9 @@
         </div>`;
       }
 
-      // ==================== ACTIONS ====================
+      /* ============================================================
+       * ACTIONS
+       * ============================================================ */
       function toggleLanguage() {
         State.language = State.language === "bn" ? "en" : "bn";
         localStorage.setItem("phs_lang", State.language);
@@ -5620,6 +5950,7 @@
       function onProfessionChange(profession) {
         const d = State.registrationData;
         d.profession = profession;
+        // Persist current values
         d.phone =
           (document.getElementById("phone") &&
             document.getElementById("phone").value.trim()) ||
@@ -6005,6 +6336,7 @@
           resultDiv.innerHTML = renderRegistrationResult(result.registration);
         else
           resultDiv.innerHTML = `<div class="text-center py-8 text-gray-500"><i class="fas fa-search text-3xl mb-2"></i><p>${t("noRegistrations")}</p></div>`;
+        // Clean verify param from URL
         try {
           if (VERIFY_ID && window.history && window.history.replaceState) {
             const cleanUrl =
@@ -6110,7 +6442,9 @@
         navigateTo("home");
       }
 
-      // ==================== PAGINATION ====================
+      /* ============================================================
+       * PAGINATION
+       * ============================================================ */
       function renderPagination(currentPage, totalPages, fnName) {
         if (totalPages <= 1) return "";
         var buttons = [];
@@ -6190,7 +6524,9 @@
           loadBatchReport();
       }
 
-      // ==================== REGISTRATION DETAILS ====================
+      /* ============================================================
+       * REGISTRATION DETAILS
+       * ============================================================ */
       async function viewRegistrationDetails(regId) {
         let reg = null;
         for (let i = 0; i < State.registrations.length; i++) {
@@ -6353,7 +6689,9 @@
         }
       }
 
-      // ==================== ENTRY PASS ====================
+      /* ============================================================
+       * ENTRY PASS
+       * ============================================================ */
       async function printAllEntryPasses() {
         showLoading("Loading Entry Passes...");
         const result = await apiCall("getApprovedStudentsForIdCard", {
@@ -6408,8 +6746,13 @@
       }
 
       function renderIdCardFront(s) {
+        const safeRegId = String(s.Registration_ID || "").replace(
+          /[^A-Z0-9]/g,
+          "_",
+        );
         return `
         <div class="id-card-front">
+            <!-- Header -->
             <div class="id-front-header">
               <div class="id-front-header-left"><div class="id-front-logo">🎓</div></div>
               <div class="id-front-header-right">
@@ -6418,54 +6761,69 @@
                 <div class="id-front-pass-label">ENTRY PASS</div>
               </div>
             </div>
-            <div class="id-front-photo-wrap"><img class="id-front-photo" src="${s.Profile_Photo_URL || "https://via.placeholder.com/80/e5e7eb/9ca3af?text=No+Photo"}" alt="Photo" onerror="this.onerror=null;this.src='https://via.placeholder.com/80/e5e7eb/9ca3af?text=No+Photo'"></div>
-            <div class="id-front-body">
-                <div class="id-front-reg-box">
+            
+            <!-- Photo -->
+            <div class="id-front-photo-wrap" style="position: relative; z-index: 1;">
+                <img class="id-front-photo" 
+                     src="${s.Profile_Photo_URL || "https://via.placeholder.com/80/e5e7eb/9ca3af?text=No+Photo"}" 
+                     alt="Photo" 
+                     style="border: 1mm solid #ffffff; box-shadow: 0 0 0 0.8mm #667eea, 0 4px 6px rgba(0,0,0,0.1);"
+                     onerror="this.onerror=null;this.src='https://via.placeholder.com/80/e5e7eb/9ca3af?text=No+Photo'">
+            </div>
+            
+            <!-- Body -->
+            <div class="id-front-body" style="z-index: 1;">
+                <div class="id-front-reg-box" style="box-shadow: 0 2px 4px rgba(102,126,234,0.1); border-width: 0.5mm;">
                     <div class="id-front-reg-id">${s.Registration_ID || "-"}</div>
-                    <div class="id-front-name">${s.Student_Name || "-"}</div>
+                    <div class="id-front-name" style="text-shadow: 0.5px 0.5px 0 rgba(255,255,255,0.8);">${s.Student_Name || "-"}</div>
                 </div>
-                <div class="id-front-grid">
-                    <div class="id-front-cell"><span class="id-front-label">SSC Batch</span><span class="id-front-value">${s.SSC_Batch || "-"}</span></div>
-                    <div class="id-front-cell"><span class="id-front-label">SSC Roll</span><span class="id-front-value">${s.SSC_Roll || "-"}</span></div>
-                    <div class="id-front-cell"><span class="id-front-label">SSC Registration</span><span class="id-front-value">${s.SSC_Registration || "-"}</span></div>
-                    <div class="id-front-cell"><span class="id-front-label">Gender</span><span class="id-front-value">${s.Gender || "-"}</span></div>
-                    <div class="id-front-cell"><span class="id-front-label">Blood Group</span><span class="id-front-value">${s.Blood_Group || "-"}</span></div>
-                    <div class="id-front-cell"><span class="id-front-label">Phone</span><span class="id-front-value">${s.Phone || "-"}</span></div>
-                    <div class="id-front-cell"><span class="id-front-label">Email</span><span class="id-front-value" style="font-size:5.5pt;">${s.Email || "-"}</span></div>
+                
+                <!-- QR code area -->
+                <div class="id-front-qr-wrap">
+                    <div class="id-front-qr" id="qr_${safeRegId}">
+                        <!-- QR Canvas inserted here -->
+                    </div>
                 </div>
             </div>
-            <div class="id-front-copyright">© ${getEventYear()} Porabari High School</div>
         </div>`;
       }
 
       function renderIdCardBack(s) {
-        const safeRegId = String(s.Registration_ID || "").replace(
-          /[^A-Z0-9]/g,
-          "_",
-        );
         return `
         <div class="id-card-back">
-            <div class="id-back-section">
-                <div class="id-back-title">Identity Details</div>
-                <div class="id-back-line"><b>Name</b> <span>${s.Student_Name || "-"}</span></div>
-                <div class="id-back-line"><b>Student ID</b> <span>${s.Student_ID || "-"}</span></div>
-                <div class="id-back-line"><b>Father</b> <span>${s.Father_Name || "-"}</span></div>
-                <div class="id-back-line"><b>Mother</b> <span>${s.Mother_Name || "-"}</span></div>
-                <div class="id-back-line"><b>DOB</b> <span>${formatDob(s.DOB)}</span></div>
-                <div class="id-back-line"><b>T-Shirt</b> <span>${s.TShirt_Size || "-"}</span></div>
-                <div class="id-back-line"><b>Participants</b> <span>${s.Participants || "1"}</span></div>
+            <div class="id-back-header">
+                IDENTITY DETAILS
             </div>
-            <div class="id-back-section">
-                <div class="id-back-title">Terms &amp; Conditions</div>
-                <ul class="id-back-list"><li>This pass is non-transferable.</li><li>Must be presented at the entrance.</li><li>Lost pass must be reported immediately.</li></ul>
+
+            <div class="id-back-content">
+                <div class="id-back-section">
+                    <div class="id-back-grid">
+                        <div class="id-back-line"><b>NAME</b> <span>${s.Student_Name || "-"}</span></div>
+                        <div class="id-back-line"><b>STUDENT ID</b> <span>${s.Student_ID || "-"}</span></div>
+                        <div class="id-back-line"><b>FATHER</b> <span>${s.Father_Name || "-"}</span></div>
+                        <div class="id-back-line"><b>MOTHER</b> <span>${s.Mother_Name || "-"}</span></div>
+                        <div class="id-back-line"><b>SSC BATCH</b> <span>${s.SSC_Batch || "-"}</span></div>
+                        <div class="id-back-line"><b>SSC ROLL</b> <span>${String(s.SSC_Roll || "").replace(/^'/, "") || "-"}</span></div>
+                        <div class="id-back-line"><b>SSC REG.</b> <span>${s.SSC_Registration || "-"}</span></div>
+                        <div class="id-back-line"><b>GENDER</b> <span>${s.Gender || "-"}</span></div>
+                        <div class="id-back-line"><b>BLOOD GROUP</b> <span>${s.Blood_Group || "-"}</span></div>
+                        <div class="id-back-line"><b>DOB</b> <span>${formatDob(s.DOB)}</span></div>
+                        <div class="id-back-line"><b>T-SHIRT</b> <span>${s.TShirt_Size || "-"}</span></div>
+                        <div class="id-back-line"><b>PARTICIPANTS</b> <span>${s.Participants || "1"}</span></div>
+                    </div>
+                </div>
+
+                <div class="id-back-terms-box">
+                    <div class="id-back-title"><i class="fas fa-exclamation-circle"></i> TERMS & CONDITIONS</div>
+                    <ul class="id-back-list">
+                        <li>This pass is non-transferable.</li>
+                        <li>Must be presented at the entrance.</li>
+                        <li>Lost pass must be reported immediately.</li>
+                    </ul>
+                </div>
             </div>
-            <div class="id-back-section">
-                <div class="id-back-title">Emergency Contact</div>
-                <div class="id-back-contact-line">📞 ${State.settings.Contact_Number || "01972-779313"}</div>
-                <div class="id-back-contact-line">✉️ ${State.settings.Contact_Email || "info@porabarihighschool.edu.bd"}</div>
-            </div>
-            <div class="id-back-qr-wrap"><div class="id-back-qr" id="qr_${safeRegId}"></div></div>
-            <div class="id-back-copyright">© ${getEventYear()} Porabari High School</div>
+
+            <div class="id-back-copyright" style="z-index: 1;">© ${getEventYear()} Porabari High School</div>
         </div>`;
       }
 
@@ -6492,6 +6850,7 @@
         }
       }
 
+      // Generate QR codes for all students (Promise)
       function generateQrCodesAsync(students) {
         return new Promise(function (resolve) {
           if (typeof QRCode === "undefined") {
@@ -6544,7 +6903,9 @@
         });
       }
 
-      // ==================== CREATE ADMIN MODAL ====================
+      /* ============================================================
+       * CREATE ADMIN MODAL
+       * ============================================================ */
       function showCreateAdminModal() {
         const existing = document.getElementById("createAdminModal");
         if (existing) existing.remove();
@@ -6624,7 +6985,9 @@
         }
       }
 
-      // ==================== CREATE GATE ADMIN MODAL ⭐ ====================
+      /* ============================================================
+       * CREATE GATE ADMIN MODAL
+       * ============================================================ */
       function showCreateGateAdminModal() {
         const existing = document.getElementById("createGateAdminModal");
         if (existing) existing.remove();
@@ -6689,7 +7052,9 @@
         }
       }
 
-      // ==================== RESET PASSWORD ====================
+      /* ============================================================
+       * RESET PASSWORD
+       * ============================================================ */
       function showResetPasswordModal(adminId) {
         let admin = null;
         for (let i = 0; i < State.admins.length; i++) {
@@ -6765,7 +7130,9 @@
         }
       }
 
-      // ==================== IMPORT EXCEL ====================
+      /* ============================================================
+       * IMPORT EXCEL
+       * ============================================================ */
       function showImportStudentsModal() {
         const existing = document.getElementById("importStudentsModal");
         if (existing) existing.remove();
@@ -6933,15 +7300,93 @@
         }
       }
 
-      // ==================== HELPERS ====================
-      function extractTime(timestamp) {
-        if (!timestamp) return "";
-        var m = String(timestamp).match(/(\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM))/i);
-        if (m) return m[1];
-        return String(timestamp).substring(0, 30);
+      /* ============================================================
+       * HOME COUNTDOWN TIMERS
+       * ============================================================ */
+      let _homeCountdownInterval = null;
+      let _deadlineCountdownInterval = null;
+
+      function startHomeCountdown(targetTimestamp, deadlineTimestamp) {
+        if (_homeCountdownInterval) clearInterval(_homeCountdownInterval);
+
+        const eventTarget = Number(targetTimestamp);
+        const deadlineTarget = Number(deadlineTimestamp);
+
+        if (!eventTarget || isNaN(eventTarget)) return;
+
+        function updateTimers() {
+          // Event countdown
+          const elDays = document.getElementById("hcDays");
+          if (elDays) {
+            const diff = eventTarget - Date.now();
+            if (diff <= 0) {
+              elDays.textContent = "0";
+              document.getElementById("hcHours").textContent = "0";
+              document.getElementById("hcMins").textContent = "0";
+              document.getElementById("hcSecs").textContent = "0";
+            } else {
+              const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+              const hours = Math.floor(
+                (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+              );
+              const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+              const secs = Math.floor((diff % (1000 * 60)) / 1000);
+              elDays.textContent = formatNumber(String(days));
+              document.getElementById("hcHours").textContent = formatNumber(
+                String(hours).padStart(2, "0"),
+              );
+              document.getElementById("hcMins").textContent = formatNumber(
+                String(mins).padStart(2, "0"),
+              );
+              document.getElementById("hcSecs").textContent = formatNumber(
+                String(secs).padStart(2, "0"),
+              );
+            }
+          }
+
+          // Deadline countdown
+          const dlDays = document.getElementById("dlDays");
+          if (dlDays && deadlineTarget && !isNaN(deadlineTarget)) {
+            const dlDiff = deadlineTarget - Date.now();
+            if (dlDiff <= 0) {
+              dlDays.textContent = "0";
+              document.getElementById("dlHours").textContent = "0";
+              document.getElementById("dlMins").textContent = "0";
+              document.getElementById("dlSecs").textContent = "0";
+            } else {
+              const dD = Math.floor(dlDiff / (1000 * 60 * 60 * 24));
+              const dH = Math.floor(
+                (dlDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+              );
+              const dM = Math.floor((dlDiff % (1000 * 60 * 60)) / (1000 * 60));
+              const dS = Math.floor((dlDiff % (1000 * 60)) / 1000);
+              dlDays.textContent = formatNumber(String(dD));
+              document.getElementById("dlHours").textContent = formatNumber(
+                String(dH).padStart(2, "0"),
+              );
+              document.getElementById("dlMins").textContent = formatNumber(
+                String(dM).padStart(2, "0"),
+              );
+              document.getElementById("dlSecs").textContent = formatNumber(
+                String(dS).padStart(2, "0"),
+              );
+            }
+          }
+
+          // Stop if elements gone
+          if (!elDays && !dlDays) {
+            clearInterval(_homeCountdownInterval);
+            _homeCountdownInterval = null;
+          }
+        }
+
+        updateTimers();
+        _homeCountdownInterval = setInterval(updateTimers, 1000);
       }
 
-      // ==================== EVENT LISTENERS ====================
+      /* ============================================================
+       * EVENT LISTENERS
+       * ============================================================ */
       let listenersAttached = false;
       function attachEventListeners() {
         if (listenersAttached) return;
@@ -6968,15 +7413,18 @@
         });
       }
 
-      // ==================== INIT ====================
+      /* ============================================================
+       * INIT
+       * ============================================================ */
       document.addEventListener("DOMContentLoaded", async () => {
-        // Load jsQR library for camera scanning
+        // Load jsQR for camera scanning
         try {
           const script = document.createElement("script");
           script.src = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
           document.head.appendChild(script);
         } catch (e) {}
 
+        // Load public settings (cached 5 min)
         try {
           const cacheKey = "phs_settings_cache";
           const cacheTimeKey = "phs_settings_cache_time";
@@ -6998,7 +7446,7 @@
           if (settings) State.settings = settings;
         } catch (e) {}
 
-        // Verification mode
+        // Verify-ID mode (from QR link)
         if (VERIFY_ID) {
           State.currentPage = "checkStatus";
           renderApp();
@@ -7016,6 +7464,7 @@
           return;
         }
 
+        // Return to check-status after registration success
         if (sessionStorage.getItem("returnToCheckStatus") === "true") {
           sessionStorage.removeItem("returnToCheckStatus");
           State.currentPage = "checkStatus";
@@ -7023,7 +7472,7 @@
           return;
         }
 
-        // Validate session
+        // Validate existing session
         if (State.session) {
           const result = await apiCall(
             "verifySession",
